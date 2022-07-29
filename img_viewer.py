@@ -77,8 +77,8 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.pushButton.setText(_translate("MainWindow", "Image1"))
-        self.pushButton_2.setText(_translate("MainWindow", "Image2"))
+        self.pushButton.setText(_translate("MainWindow", "Previous"))
+        self.pushButton_2.setText(_translate("MainWindow", "Next"))
 
     def clicked_button1(self):
         global count
