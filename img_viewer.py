@@ -12,6 +12,9 @@ from itertools import count
 from PyQt5 import QtCore, QtGui, QtWidgets
 import glob
 from numpy import sort
+from viewer import get_bbox_xml
+import os
+import cv2
 
 img_list = []
 img_formats = ('*.jpg', '*.jpeg', '*.png')
@@ -37,6 +40,11 @@ if len(non_empty_img_list)>0:
 
 # print('final_img_list: ', final_img_list)
 
+def get_bbx_img(img_path):
+    xml_path = os.path.splitext(img_path)[0] + '.xml'
+    img = get_bbox_xml(xml_path)
+    return img
+
 count = 0
 total_img = len(final_img_list) - 1
 
@@ -49,8 +57,9 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName("centralwidget")
         self.photo = QtWidgets.QLabel(self.centralwidget)
         self.photo.setGeometry(QtCore.QRect(-4, 6, 641, 381))
-        self.photo.setText("")
-        self.photo.setPixmap(QtGui.QPixmap("img/WhatsApp Image 2022-07-05 at 2.46.28 PM.jpeg"))
+        self.photo.setText("Image Area")
+        self.photo.move(300, 100)
+        # self.photo.setPixmap(QtGui.QPixmap(final_img_list[0]))
         self.photo.setScaledContents(True)
         self.photo.setObjectName("photo")
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
@@ -79,6 +88,7 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.pushButton.setText(_translate("MainWindow", "Previous"))
         self.pushButton_2.setText(_translate("MainWindow", "Next"))
+        
 
     def clicked_button1(self):
         global count
@@ -86,14 +96,22 @@ class Ui_MainWindow(object):
             count = total_img
         else:
             count = count - 1
-        self.photo.setPixmap(QtGui.QPixmap(final_img_list[count]))
+        # self.temp = get_bbx_img(final_img_list[count])
+        img = get_bbx_img(final_img_list[count])
+        frame = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        image = QtGui.QImage(frame, frame.shape[1],frame.shape[0],frame.strides[0],QtGui.QImage.Format_RGB888)
+        # self.photo.setPixmap(QtGui.QPixmap(final_img_list[count]))
+        self.photo.setPixmap(QtGui.QPixmap.fromImage(image))
     def clicked_button2(self):
         global count
         if count==total_img:
             count = 0
         else:
             count = count + 1
-        self.photo.setPixmap(QtGui.QPixmap(final_img_list[count]))
+        img = get_bbx_img(final_img_list[count])
+        frame = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        image = QtGui.QImage(frame, frame.shape[1],frame.shape[0],frame.strides[0],QtGui.QImage.Format_RGB888)
+        self.photo.setPixmap(QtGui.QPixmap.fromImage(image))
 
 if __name__ == "__main__":
     import sys
